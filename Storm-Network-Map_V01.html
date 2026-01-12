@@ -2,8 +2,8 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <!-- إصلاح مشاكل iPhone/Safari -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- إصلاح مشاكل iPhone/Safari + إجبار العرض كـ Desktop -->
+  <meta name="viewport" content="width=1024, initial-scale=1.0, viewport-fit=cover">
 
   <title>الخريطة التفاعلية لشبكات السيول</title>
 
@@ -97,6 +97,7 @@
       height: 100%;
       border: none;
       display: block;
+      min-width: 1024px; /* إجبار عرض سطح المكتب */
     }
   </style>
 </head>
@@ -115,7 +116,8 @@
   </div>
 
   <div id="map-container">
-    <iframe src="https://www.arcgis.com/apps/mapviewer/index.html?webmap=c547b98159744cacb7a42db1c060bf64"></iframe>
+    <!-- إضافة &mobile=false لإجبار ArcGIS على وضع سطح المكتب -->
+    <iframe src="https://www.arcgis.com/apps/mapviewer/index.html?webmap=c547b98159744cacb7a42db1c060bf64&mobile=false"></iframe>
   </div>
 
   <script>
