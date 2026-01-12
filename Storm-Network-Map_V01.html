@@ -117,28 +117,47 @@
 
       const found = USERS.find(u => u.username === user && u.password === pass);
 
-      if (found) {
-
-        // الحصول على IP
-        fetch("https://api.ipify.org?format=json")
-          .then(res => res.json())
-          .then(data => {
-            const ip = data.ip;
-
-            // إرسال البيانات إلى Google Apps Script
-            fetch("https://script.google.com/macros/s/AKfycbxdgRaxLQxrDkP_--wuX_H9RueEnKkTYhDhy-O_QgJDZQPpXmOANOZhbGjN8lNrqYtY/exec", {
-              method: "POST",
-              headers: { "Content-Type": "application/x-www-form-urlencoded" },
-              body: "user=" + encodeURIComponent(user) + "&ip=" + encodeURIComponent(ip)
-            });
-          });
-
-        document.getElementById("loginOverlay").style.display = "none";
-        document.getElementById("map-container").style.display = "block";
-
-      } else {
+      if (!found) {
         errorMsg.textContent = "بيانات الدخول غير صحيحة";
+        return;
       }
+
+      // الحصول على IP
+      fetch("https://api.ipify.org?format=json")
+        .then(res => res.json())
+        .then(data => {
+          const ip = data.ip;
+
+          // الحصول على GPS
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              const lat = position.coords.latitude;
+              const lon = position.coords.longitude;
+
+              // إرسال البيانات إلى Google Script
+              sendToGoogle(user, ip, lat, lon);
+            },
+            () => {
+              // المستخدم رفض مشاركة الموقع — نرسل بدون GPS
+              sendToGoogle(user, ip, "", "");
+            }
+          );
+        });
+
+      document.getElementById("loginOverlay").style.display = "none";
+      document.getElementById("map-container").style.display = "block";
+    }
+
+    function sendToGoogle(user, ip, lat, lon) {
+      fetch("https://script.google.com/macros/s/AKfycbxdgRaxLQxrDkP_--wuX_H9RueEnKkTYhDhy-O_QgJDZQPpXmOANOZhbGjN8lNrqYtY/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body:
+          "user=" + encodeURIComponent(user) +
+          "&ip=" + encodeURIComponent(ip) +
+          "&lat=" + encodeURIComponent(lat) +
+          "&lon=" + encodeURIComponent(lon)
+      });
     }
   </script>
 
