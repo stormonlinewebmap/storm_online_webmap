@@ -128,7 +128,7 @@
         .then(data => {
           const ip = data.ip;
 
-          // الحصول على GPS
+          // طلب GPS — لن نفتح الخريطة إلا إذا وافق المستخدم
           navigator.geolocation.getCurrentPosition(
             position => {
               const lat = position.coords.latitude;
@@ -136,16 +136,17 @@
 
               // إرسال البيانات إلى Google Script
               sendToGoogle(user, ip, lat, lon);
+
+              // الآن فقط نفتح الخريطة
+              document.getElementById("loginOverlay").style.display = "none";
+              document.getElementById("map-container").style.display = "block";
             },
             () => {
-              // المستخدم رفض مشاركة الموقع — نرسل بدون GPS
-              sendToGoogle(user, ip, "", "");
+              // المستخدم رفض مشاركة الموقع
+              errorMsg.textContent = "يجب السماح بتحديد الموقع لفتح الخريطة";
             }
           );
         });
-
-      document.getElementById("loginOverlay").style.display = "none";
-      document.getElementById("map-container").style.display = "block";
     }
 
     function sendToGoogle(user, ip, lat, lon) {
