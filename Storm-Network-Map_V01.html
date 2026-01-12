@@ -2,7 +2,8 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- مهم جدًا لإصلاح مشاكل iPhone -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <title>الخريطة التفاعلية لشبكات السيول</title>
 
@@ -13,6 +14,7 @@
       background-color: #f3f4f6;
       margin: 0;
       padding: 0;
+      height: 100%;
     }
 
     /* الهيدر */
@@ -81,8 +83,13 @@
 
     /* الخريطة */
     #map-container {
+      position: absolute;
+      top: env(safe-area-inset-top);
+      bottom: env(safe-area-inset-bottom);
+      left: 0;
+      right: 0;
       width: 100%;
-      height: calc(100vh - 60px);
+      height: -webkit-fill-available; /* خاص بـ iPhone Safari */
       display: none;
     }
 
@@ -90,6 +97,7 @@
       width: 100%;
       height: 100%;
       border: none;
+      display: block;
     }
 
     /* تصميم خاص للجوال */
@@ -132,22 +140,14 @@
       }
 
       #map-container {
-        height: calc(100vh - 55px);
+        height: -webkit-fill-available;
       }
     }
 
     /* Safari browser */
     @supports (-webkit-touch-callout: none) {
-      #loginBox {
-        padding: 20px;
-      }
-
-      #loginBox input {
-        font-size: 16px;
-      }
-
-      #loginBox button {
-        font-size: 17px;
+      #map-container {
+        height: -webkit-fill-available;
       }
     }
   </style>
