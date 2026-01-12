@@ -109,6 +109,47 @@
         padding: 10px;
       }
     }
+
+    /* iPhone devices */
+    @media only screen 
+      and (max-device-width: 430px) 
+      and (-webkit-min-device-pixel-ratio: 2) {
+
+      #loginBox {
+        max-width: 90%;
+        padding: 18px;
+      }
+
+      #loginBox input,
+      #loginBox button {
+        font-size: 15px;
+        padding: 10px;
+      }
+
+      #header {
+        font-size: 18px;
+        padding: 10px;
+      }
+
+      #map-container {
+        height: calc(100vh - 55px);
+      }
+    }
+
+    /* Safari browser */
+    @supports (-webkit-touch-callout: none) {
+      #loginBox {
+        padding: 20px;
+      }
+
+      #loginBox input {
+        font-size: 16px;
+      }
+
+      #loginBox button {
+        font-size: 17px;
+      }
+    }
   </style>
 </head>
 <body>
