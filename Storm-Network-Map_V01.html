@@ -11,13 +11,12 @@
     body {
       font-family: Arial, sans-serif;
       direction: rtl;
-      background-color: #f3f4f6;
       margin: 0;
       padding: 0;
       height: 100%;
+      background-color: #f3f4f6;
     }
 
-    /* الهيدر */
     #header {
       display: flex;
       align-items: center;
@@ -29,7 +28,6 @@
       text-align: center;
     }
 
-    /* شاشة تسجيل الدخول */
     #loginOverlay {
       position: fixed;
       top: 0;
@@ -89,7 +87,7 @@
       left: 0;
       right: 0;
       width: 100%;
-      height: 100vh;              /* fallback لجميع المتصفحات */
+      height: 100vh;               /* fallback لجميع المتصفحات */
       height: -webkit-fill-available; /* خاص بـ Safari iOS */
       display: none;
     }
@@ -99,57 +97,6 @@
       height: 100%;
       border: none;
       display: block;
-    }
-
-    /* تصميم خاص للجوال */
-    @media (max-width: 600px) {
-      #header {
-        font-size: 18px;
-        padding: 12px;
-      }
-
-      #loginBox {
-        padding: 20px;
-      }
-
-      #loginBox input,
-      #loginBox button {
-        font-size: 16px;
-        padding: 10px;
-      }
-    }
-
-    /* iPhone devices */
-    @media only screen 
-      and (max-device-width: 430px) 
-      and (-webkit-min-device-pixel-ratio: 2) {
-
-      #loginBox {
-        max-width: 90%;
-        padding: 18px;
-      }
-
-      #loginBox input,
-      #loginBox button {
-        font-size: 15px;
-        padding: 10px;
-      }
-
-      #header {
-        font-size: 18px;
-        padding: 10px;
-      }
-
-      #map-container {
-        height: -webkit-fill-available;
-      }
-    }
-
-    /* Safari browser */
-    @supports (-webkit-touch-callout: none) {
-      #map-container {
-        height: -webkit-fill-available;
-      }
     }
   </style>
 </head>
@@ -237,5 +184,3 @@
 
 </body>
 </html>
-
-
