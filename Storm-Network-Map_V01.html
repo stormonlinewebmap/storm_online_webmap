@@ -11,13 +11,12 @@
     body {
       font-family: Arial, sans-serif;
       direction: rtl;
-      background-color: #f3f4f6;
       margin: 0;
       padding: 0;
       height: 100%;
+      background-color: #f3f4f6;
     }
 
-    /* الهيدر */
     #header {
       display: flex;
       align-items: center;
@@ -29,7 +28,6 @@
       text-align: center;
     }
 
-    /* شاشة تسجيل الدخول */
     #loginOverlay {
       position: fixed;
       top: 0;
@@ -89,7 +87,7 @@
       left: 0;
       right: 0;
       width: 100%;
-      height: 100vh;              /* fallback لجميع المتصفحات */
+      height: 100vh;               /* fallback لجميع المتصفحات */
       height: -webkit-fill-available; /* خاص بـ Safari iOS */
       display: none;
     }
@@ -101,7 +99,7 @@
       display: block;
     }
 
-    /* تصميم خاص للجوال */
+    /* القاعدة العامة لكل الهواتف */
     @media (max-width: 600px) {
       #header {
         font-size: 18px;
@@ -110,6 +108,7 @@
 
       #loginBox {
         padding: 20px;
+        max-width: 90%;
       }
 
       #loginBox input,
@@ -117,38 +116,36 @@
         font-size: 16px;
         padding: 10px;
       }
+
+      #map-container {
+        height: 100vh; /* fallback */
+      }
     }
 
-    /* iPhone devices */
+    /* أجهزة iPhone (قديمة وحديثة) */
     @media only screen 
       and (max-device-width: 430px) 
       and (-webkit-min-device-pixel-ratio: 2) {
 
-      #loginBox {
-        max-width: 90%;
-        padding: 18px;
+      #map-container {
+        height: -webkit-fill-available; /* إصلاح Safari */
       }
 
-      #loginBox input,
-      #loginBox button {
+      #loginBox {
         font-size: 15px;
-        padding: 10px;
+        padding: 18px;
       }
 
       #header {
         font-size: 18px;
         padding: 10px;
       }
-
-      #map-container {
-        height: -webkit-fill-available;
-      }
     }
 
-    /* Safari browser */
+    /* Safari تحديدًا */
     @supports (-webkit-touch-callout: none) {
       #map-container {
-        height: -webkit-fill-available;
+        height: -webkit-fill-available; /* إصلاح مشكلة shrink */
       }
     }
   </style>
