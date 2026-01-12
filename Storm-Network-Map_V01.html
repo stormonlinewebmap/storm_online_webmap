@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <!-- مهم جدًا لإصلاح مشاكل iPhone -->
+  <!-- إصلاح مشاكل iPhone/Safari -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <title>الخريطة التفاعلية لشبكات السيول</title>
@@ -89,7 +89,8 @@
       left: 0;
       right: 0;
       width: 100%;
-      height: -webkit-fill-available; /* خاص بـ iPhone Safari */
+      height: 100vh;              /* fallback لجميع المتصفحات */
+      height: -webkit-fill-available; /* خاص بـ Safari iOS */
       display: none;
     }
 
