@@ -87,9 +87,10 @@
       left: 0;
       right: 0;
       width: 100%;
-      height: 100vh;               /* fallback لجميع المتصفحات */
-      height: -webkit-fill-available; /* خاص بـ Safari iOS */
+      /* لا نعتمد على 100vh فقط */
+      height: auto;
       display: none;
+      background: #fff;
     }
 
     iframe {
@@ -116,20 +117,12 @@
         font-size: 16px;
         padding: 10px;
       }
-
-      #map-container {
-        height: 100vh; /* fallback */
-      }
     }
 
     /* أجهزة iPhone (قديمة وحديثة) */
     @media only screen 
       and (max-device-width: 430px) 
       and (-webkit-min-device-pixel-ratio: 2) {
-
-      #map-container {
-        height: -webkit-fill-available; /* إصلاح Safari */
-      }
 
       #loginBox {
         font-size: 15px;
@@ -144,9 +137,7 @@
 
     /* Safari تحديدًا */
     @supports (-webkit-touch-callout: none) {
-      #map-container {
-        height: -webkit-fill-available; /* إصلاح مشكلة shrink */
-      }
+      /* لا حاجة لتغيير هنا لأن الارتفاع يتم عبر JS */
     }
   </style>
 </head>
@@ -165,7 +156,8 @@
   </div>
 
   <div id="map-container">
-    <iframe src="https://www.arcgis.com/apps/mapviewer/index.html?webmap=c547b98159744cacb7a42db1c060bf64"></iframe>
+    <!-- إذا أردت إجبار نسخة سطح المكتب أضف &mobile=false إلى الرابط -->
+    <iframe id="mapFrame" src="https://www.arcgis.com/apps/mapviewer/index.html?webmap=c547b98159744cacb7a42db1c060bf64"></iframe>
   </div>
 
   <script>
@@ -176,6 +168,28 @@
       { username: "user3", password: "333" }
     ];
 
+    // تضبط ارتفاع حاوية الخريطة بناءً على الارتفاع المرئي الحقيقي
+    function setMapContainerHeight() {
+      const map = document.getElementById('map-container');
+      const h = window.innerHeight || document.documentElement.clientHeight;
+      map.style.height = h + 'px';
+    }
+
+    // تعرض الحاوية وتضبط الارتفاع وتقوم بتمرير الصفحة لأعلى لتقليل تأثير شريط المتصفح
+    function showMapContainer() {
+      document.getElementById('loginOverlay').style.display = 'none';
+      const map = document.getElementById('map-container');
+      map.style.display = 'block';
+      setMapContainerHeight();
+      // تمرير بسيط لأعلى لتحديث chrome في بعض نسخ Safari
+      window.scrollTo(0, 0);
+      // إعادة تحميل iframe إذا لزم الأمر لإجبار إعادة رسم الخريطة
+      const iframe = document.getElementById('mapFrame');
+      // إذا لاحظت أن الخريطة لا تعيد الرسم بشكل صحيح، فكّم السطر التالي
+      // iframe.src = iframe.src;
+    }
+
+    // استبدل إظهار الخريطة في checkLogin() باستدعاء showMapContainer()
     function checkLogin() {
       const user = document.getElementById("username").value.trim();
       const pass = document.getElementById("password").value.trim();
@@ -203,9 +217,27 @@
               // إرسال البيانات إلى Google Script
               sendToGoogle(user, ip, lat, lon);
 
-              // الآن فقط نفتح الخريطة
-              document.getElementById("loginOverlay").style.display = "none";
-              document.getElementById("map-container").style.display = "block";
+              // الآن نعرض الخريطة باستخدام الدالة المخصصة
+              showMapContainer();
+            },
+            () => {
+              errorMsg.textContent = "يجب السماح بتحديد الموقع لفتح الخريطة";
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0
+            }
+          );
+        })
+        .catch(() => {
+          // في حال فشل جلب IP نتابع بنفس الطريقة
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              const lat = position.coords.latitude;
+              const lon = position.coords.longitude;
+              sendToGoogle(user, 'unknown', lat, lon);
+              showMapContainer();
             },
             () => {
               errorMsg.textContent = "يجب السماح بتحديد الموقع لفتح الخريطة";
@@ -228,8 +260,18 @@
           "&ip=" + encodeURIComponent(ip) +
           "&lat=" + encodeURIComponent(lat) +
           "&lon=" + encodeURIComponent(lon)
+      }).catch(() => {
+        // تجاهل أخطاء الإرسال بصمت أو أضف معالجة حسب الحاجة
       });
     }
+
+    // ضبط الارتفاع عند التحميل، تغيير الحجم، والتدوير
+    window.addEventListener('load', setMapContainerHeight);
+    window.addEventListener('resize', setMapContainerHeight);
+    window.addEventListener('orientationchange', () => {
+      // تأخير بسيط للسماح لـ Safari بتحديث chrome ثم ضبط الارتفاع
+      setTimeout(setMapContainerHeight, 300);
+    });
   </script>
 
 </body>
