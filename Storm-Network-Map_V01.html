@@ -7,42 +7,41 @@
 <title>الخريطة التفاعلية لشبكات السيول</title>
 
 <style>
-:root {
-  --vh: 100vh;
-}
-
-body {
+html, body {
   margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
   font-family: Arial, sans-serif;
   direction: rtl;
   background: #f3f4f6;
-  height: 100%;
-  overflow: hidden;
 }
 
+/* العنوان */
 #header {
-  background: rgb(36, 109, 37);
+  background: rgb(36,109,37);
   color: white;
+  text-align: center;
   padding: 14px;
   font-size: 20px;
-  text-align: center;
 }
 
+/* تسجيل الدخول */
 #loginOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.55);
+  background: rgba(0,0,0,0.55);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 9999;
+  align-items: center;
+  z-index: 10000;
 }
 
 #loginBox {
-  background: #fff;
+  background: white;
   padding: 22px;
   border-radius: 10px;
-  width: 100%;
+  width: 90%;
   max-width: 340px;
   text-align: center;
 }
@@ -70,19 +69,20 @@ body {
 /* الخريطة */
 #map-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: calc(var(--vh));
-  display: none;
+  inset: 0;
+  top: 52px; /* ارتفاع العنوان */
+  visibility: hidden;
   background: white;
+}
+
+#map-container.active {
+  visibility: visible;
 }
 
 iframe {
   width: 100%;
   height: 100%;
   border: none;
-  display: block;
 }
 </style>
 </head>
@@ -102,9 +102,7 @@ iframe {
 </div>
 
 <div id="map-container">
-  <iframe id="mapFrame"
-    src="https://www.arcgis.com/apps/mapviewer/index.html?webmap=c547b98159744cacb7a42db1c060bf64">
-  </iframe>
+  <iframe id="mapFrame"></iframe>
 </div>
 
 <script>
@@ -115,24 +113,19 @@ const USERS = [
   { username: "user3", password: "333" }
 ];
 
-// إصلاح vh في Safari
-function setVH() {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh * 100}px`);
-}
+let mapLoaded = false;
 
 function showMap() {
-  document.getElementById('loginOverlay').style.display = 'none';
-  const map = document.getElementById('map-container');
-  map.style.display = 'block';
+  const map = document.getElementById("map-container");
+  const iframe = document.getElementById("mapFrame");
 
-  setVH();
+  map.classList.add("active");
 
-  // إجبار Safari على إعادة رسم iframe
-  const iframe = document.getElementById('mapFrame');
-  iframe.style.display = 'none';
-  iframe.offsetHeight;
-  iframe.style.display = 'block';
+  if (!mapLoaded) {
+    iframe.src =
+      "https://www.arcgis.com/apps/mapviewer/index.html?webmap=c547b98159744cacb7a42db1c060bf64";
+    mapLoaded = true;
+  }
 }
 
 function checkLogin() {
@@ -140,8 +133,8 @@ function checkLogin() {
   const p = password.value.trim();
   const err = errorMsg;
 
-  const ok = USERS.find(x => x.username === u && x.password === p);
-  if (!ok) {
+  const valid = USERS.find(x => x.username === u && x.password === p);
+  if (!valid) {
     err.textContent = "بيانات الدخول غير صحيحة";
     return;
   }
@@ -153,9 +146,16 @@ function checkLogin() {
         .then(d => sendToGoogle(u, d.ip, pos.coords.latitude, pos.coords.longitude))
         .catch(() => sendToGoogle(u, "unknown", pos.coords.latitude, pos.coords.longitude));
 
+      document.getElementById("loginOverlay").style.display = "none";
       showMap();
     },
-    () => err.textContent = "يجب السماح بتحديد الموقع"
+    () => {
+      err.textContent = "يجب السماح بتحديد الموقع";
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000
+    }
   );
 }
 
@@ -164,13 +164,9 @@ function sendToGoogle(user, ip, lat, lon) {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body:
-      `user=${encodeURIComponent(user)}&ip=${ip}&lat=${lat}&lon=${lon}`
-  });
+      `user=${encodeURIComponent(user)}&ip=${encodeURIComponent(ip)}&lat=${lat}&lon=${lon}`
+  }).catch(()=>{});
 }
-
-window.addEventListener('load', setVH);
-window.addEventListener('resize', setVH);
-window.addEventListener('orientationchange', () => setTimeout(setVH, 300));
 </script>
 
 </body>
