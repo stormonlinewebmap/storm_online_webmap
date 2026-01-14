@@ -162,15 +162,17 @@ function checkLogin() {
     );
 }
 
-// التحقق من تسجيل الدخول على التحميل
+// التحقق من حالة تسجيل الدخول عند تحميل الصفحة
 window.onload = function() {
     const savedUsername = localStorage.getItem('username');
     if (savedUsername) {
+        // المستخدم مسجل الدخول
         document.getElementById("username").value = savedUsername;
         document.getElementById("loginOverlay").style.display = "none";
         setRealVH();
         showMap();
     } else {
+        // لم يتم تسجيل الدخول
         setRealVH();
     }
 };
