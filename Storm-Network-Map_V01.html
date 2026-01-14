@@ -17,7 +17,6 @@
             direction: rtl;
             background: #f3f4f6;
         }
-        /* العنوان */
         #header {
             background: rgb(36,109,37);
             color: white;
@@ -25,7 +24,6 @@
             padding: 14px;
             box-sizing: border-box;
         }
-        /* تسجيل الدخول */
         #loginOverlay {
             position: fixed;
             inset: 0;
@@ -60,14 +58,13 @@
             color: #b91c1c;
             margin-top: 10px;
         }
-        /* الخريطة */
         #map-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: calc(var(--vh) - 52px);
-            margin-top: 52px; /* تأكد من توافق مع مكان العنوان */
+            margin-top: 52px; 
             background: white;
             visibility: hidden;
         }
@@ -87,7 +84,7 @@
 
 <div id="header">إدارة تصميم ودراسة شبكات السيول</div>
 
-<div id="loginOverlay">
+<div id="loginOverlay" style="display: flex;">
     <div id="loginBox">
         <h3>تسجيل الدخول</h3>
         <input id="username" placeholder="اسم المستخدم" autocomplete="username">
@@ -116,7 +113,6 @@ const USERS = [
 
 let mapLoaded = false;
 
-/* الحل الذهبي لمشكلة iOS */
 function setRealVH() {
     const vh = window.innerHeight;
     document.documentElement.style.setProperty('--vh', vh + 'px');
@@ -145,6 +141,9 @@ function checkLogin() {
         return;
     }
 
+    // حفظ حالة تسجيل الدخول
+    localStorage.setItem('username', u);
+
     navigator.geolocation.getCurrentPosition(
         pos => {
             fetch("https://api.ipify.org?format=json")
@@ -163,6 +162,19 @@ function checkLogin() {
     );
 }
 
+// التحقق من تسجيل الدخول على التحميل
+window.onload = function() {
+    const savedUsername = localStorage.getItem('username');
+    if (savedUsername) {
+        document.getElementById("username").value = savedUsername;
+        document.getElementById("loginOverlay").style.display = "none";
+        setRealVH();
+        showMap();
+    } else {
+        setRealVH();
+    }
+};
+
 function sendToGoogle(user, ip, lat, lon) {
     fetch("https://script.google.com/macros/s/AKfycbxdgRaxLQxrDkP_--wuX_H9RueEnKkTYhDhy-O_QgJDZQPpXmOANOZhbGjN8lNrqYtY/exec", {
         method: "POST",
@@ -171,8 +183,6 @@ function sendToGoogle(user, ip, lat, lon) {
     }).catch(()=>{});
 }
 
-/* تحديث الارتفاع في الحالات الحرجة */
-window.addEventListener('load', setRealVH);
 window.addEventListener('resize', setRealVH);
 window.addEventListener('orientationchange', () => {
     setTimeout(setRealVH, 400);
