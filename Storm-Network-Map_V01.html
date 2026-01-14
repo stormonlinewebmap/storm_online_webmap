@@ -1,99 +1,86 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-
-<title>الخريطة التفاعلية لشبكات السيول</title>
-
-<style>
-:root {
-  --vh: 100vh;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-  direction: rtl;
-  background: #f3f4f6;
-}
-
-/* العنوان */
-#header {
-  background: rgb(36,109,37);
-  color: white;
-  text-align: center;
-  padding: 14px;
-  font-size: 20px;
-  height: 52px;
-  box-sizing: border-box;
-}
-
-/* تسجيل الدخول */
-#loginOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-}
-
-#loginBox {
-  background: white;
-  padding: 22px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 340px;
-  text-align: center;
-}
-
-#loginBox input,
-#loginBox button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 12px;
-  font-size: 16px;
-}
-
-#loginBox button {
-  background: rgb(36,109,37);
-  color: white;
-  border: none;
-  border-radius: 6px;
-}
-
-#errorMsg {
-  color: #b91c1c;
-  margin-top: 10px;
-}
-
-/* الخريطة */
-#map-container {
-  position: fixed;
-  top: 52px;
-  left: 0;
-  width: 100%;
-  height: calc(var(--vh) - 52px);
-  background: white;
-  visibility: hidden;
-}
-
-#map-container.active {
-  visibility: visible;
-}
-
-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: block;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>الخريطة التفاعلية لشبكات السيول</title>
+    <style>
+        :root {
+            --vh: 100vh;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            background: #f3f4f6;
+        }
+        /* العنوان */
+        #header {
+            background: rgb(36,109,37);
+            color: white;
+            text-align: center;
+            padding: 14px;
+            box-sizing: border-box;
+        }
+        /* تسجيل الدخول */
+        #loginOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        #loginBox {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 340px;
+            text-align: center;
+        }
+        #loginBox input,
+        #loginBox button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 16px;
+        }
+        #loginBox button {
+            background: rgb(36,109,37);
+            color: white;
+            border: none;
+            border-radius: 6px;
+        }
+        #errorMsg {
+            color: #b91c1c;
+            margin-top: 10px;
+        }
+        /* الخريطة */
+        #map-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(var(--vh) - 52px);
+            margin-top: 52px; /* تأكد من توافق مع مكان العنوان */
+            background: white;
+            visibility: hidden;
+        }
+        #map-container.active {
+            visibility: visible;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
@@ -101,97 +88,94 @@ iframe {
 <div id="header">إدارة تصميم ودراسة شبكات السيول</div>
 
 <div id="loginOverlay">
-  <div id="loginBox">
-    <h3>تسجيل الدخول</h3>
-    <input id="username" placeholder="اسم المستخدم">
-    <input id="password" type="password" placeholder="كلمة المرور">
-    <button onclick="checkLogin()">دخول</button>
-    <div id="errorMsg"></div>
-  </div>
+    <div id="loginBox">
+        <h3>تسجيل الدخول</h3>
+        <input id="username" placeholder="اسم المستخدم" autocomplete="username">
+        <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+        <button onclick="checkLogin()">دخول</button>
+        <div id="errorMsg"></div>
+    </div>
 </div>
 
 <div id="map-container">
-  <iframe id="mapFrame"></iframe>
+    <iframe id="mapFrame"></iframe>
 </div>
 
 <script>
 const USERS = [
-  { username: "admin", password: "123" },
-  { username: "user1", password: "111" },
-  { username: "user2", password: "222" },
-  { username: "Abu Yousef", password: "Yousef1983" },
-  { username: "Monamour", password: "9090" },
-  { username: "mogo50", password: "m2010" },
-  { username: "Mowafy", password: "2907" },
-  { username: "Maher21295@gmail.com", password: "Ff010975*" },
-  { username: "user3", password: "333" }
+    { username: "admin", password: "123" },
+    { username: "user1", password: "111" },
+    { username: "user2", password: "222" },
+    { username: "Abu Yousef", password: "Yousef1983" },
+    { username: "Monamour", password: "9090" },
+    { username: "mogo50", password: "m2010" },
+    { username: "Mowafy", password: "2907" },
+    { username: "Maher21295@gmail.com", password: "Ff010975*" },
+    { username: "user3", password: "333" }
 ];
 
 let mapLoaded = false;
 
 /* الحل الذهبي لمشكلة iOS */
 function setRealVH() {
-  const vh = window.innerHeight;
-  document.documentElement.style.setProperty('--vh', vh + 'px');
-  document.body.style.height = `${vh}px`;
+    const vh = window.innerHeight;
+    document.documentElement.style.setProperty('--vh', vh + 'px');
 }
 
 function showMap() {
-  const map = document.getElementById("map-container");
-  const iframe = document.getElementById("mapFrame");
+    const map = document.getElementById("map-container");
+    const iframe = document.getElementById("mapFrame");
 
-  map.classList.add("active");
+    map.classList.add("active");
 
-  if (!mapLoaded) {
-    iframe.src =
-      "https://www.arcgis.com/apps/mapviewer/index.html?webmap=c547b98159744cacb7a42db1c060bf64";
-    mapLoaded = true;
-  }
+    if (!mapLoaded) {
+        iframe.src = "https://www.arcgis.com/apps/mapviewer/index.html?webmap=c547b98159744cacb7a42db1c060bf64";
+        mapLoaded = true;
+    }
 }
 
 function checkLogin() {
-  const u = username.value.trim();
-  const p = password.value.trim();
-  const err = errorMsg;
+    const u = document.getElementById("username").value.trim();
+    const p = document.getElementById("password").value.trim();
+    const err = document.getElementById("errorMsg");
 
-  const valid = USERS.find(x => x.username === u && x.password === p);
-  if (!valid) {
-    err.textContent = "بيانات الدخول غير صحيحة";
-    return;
-  }
+    const valid = USERS.find(x => x.username === u && x.password === p);
+    if (!valid) {
+        err.textContent = "بيانات الدخول غير صحيحة";
+        return;
+    }
 
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      fetch("https://api.ipify.org?format=json")
-        .then(r => r.json())
-        .then(d => sendToGoogle(u, d.ip, pos.coords.latitude, pos.coords.longitude))
-        .catch(() => sendToGoogle(u, "unknown", pos.coords.latitude, pos.coords.longitude));
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            fetch("https://api.ipify.org?format=json")
+                .then(r => r.json())
+                .then(d => sendToGoogle(u, d.ip, pos.coords.latitude, pos.coords.longitude))
+                .catch(() => sendToGoogle(u, "unknown", pos.coords.latitude, pos.coords.longitude));
 
-      document.getElementById("loginOverlay").style.display = "none";
-      setRealVH();
-      showMap();
-    },
-    () => {
-      err.textContent = "يجب السماح بتحديد الموقع";
-    },
-    { enableHighAccuracy: true, timeout: 10000 }
-  );
+            document.getElementById("loginOverlay").style.display = "none";
+            setRealVH();
+            showMap();
+        },
+        () => {
+            err.textContent = "يجب السماح بتحديد الموقع";
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+    );
 }
 
 function sendToGoogle(user, ip, lat, lon) {
-  fetch("https://script.google.com/macros/s/AKfycbxdgRaxLQxrDkP_--wuX_H9RueEnKkTYhDhy-O_QgJDZQPpXmOANOZhbGjN8lNrqYtY/exec", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body:
-      `user=${encodeURIComponent(user)}&ip=${encodeURIComponent(ip)}&lat=${lat}&lon=${lon}`
-  }).catch(()=>{});
+    fetch("https://script.google.com/macros/s/AKfycbxdgRaxLQxrDkP_--wuX_H9RueEnKkTYhDhy-O_QgJDZQPpXmOANOZhbGjN8lNrqYtY/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `user=${encodeURIComponent(user)}&ip=${encodeURIComponent(ip)}&lat=${lat}&lon=${lon}`
+    }).catch(()=>{});
 }
 
 /* تحديث الارتفاع في الحالات الحرجة */
 window.addEventListener('load', setRealVH);
 window.addEventListener('resize', setRealVH);
 window.addEventListener('orientationchange', () => {
-  setTimeout(setRealVH, 400);
+    setTimeout(setRealVH, 400);
 });
 </script>
 
