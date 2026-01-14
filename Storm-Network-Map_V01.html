@@ -133,6 +133,7 @@ let mapLoaded = false;
 function setRealVH() {
   const vh = window.innerHeight;
   document.documentElement.style.setProperty('--vh', vh + 'px');
+  document.body.style.height = `${vh}px`;
 }
 
 function showMap() {
@@ -196,8 +197,3 @@ window.addEventListener('orientationchange', () => {
 
 </body>
 </html>
-
-
-
-
-
