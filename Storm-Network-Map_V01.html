@@ -130,7 +130,7 @@ function checkLogin() {
 
     const ok = USERS.find(x => x.username === u && x.password === p);
     if (!ok) {
-        err.textContent = "بيانات الدخول غير صحيحة";
+        err.textContent = "error";
         return;
     }
 
