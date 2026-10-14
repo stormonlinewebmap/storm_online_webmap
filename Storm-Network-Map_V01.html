@@ -6,69 +6,263 @@
 <title>الخريطة التفاعلية لشبكات السيول</title>
 
 <style>
+:root {
+    --primary: #246d25;
+    --primary-dark: #1b5420;
+    --primary-light: #e8f3e8;
+    --danger: #b91c1c;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --bg: #f3f4f6;
+    --card: #ffffff;
+    --radius: 14px;
+}
+
+* { box-sizing: border-box; }
+
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
     direction: rtl;
-    background: #f3f4f6;
+    background: var(--bg);
     overflow: hidden;
+    color: var(--text);
 }
 
 #header {
-    background: rgb(36,109,37);
+    background: linear-gradient(120deg, var(--primary-dark) 0%, var(--primary) 55%, #2f8a30 100%);
     color: white;
-    text-align: center;
-    padding: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.18);
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
+#headerIcon {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    background: rgba(255,255,255,.18);
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#headerIcon svg { width: 18px; height: 18px; }
+
+#headerText {
+    text-align: center;
+    line-height: 1.3;
+}
+
+#headerText .title {
+    font-size: 16.5px;
+    font-weight: 700;
+    letter-spacing: .2px;
+    text-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+
+#headerText .subtitle {
+    font-size: 10.5px;
+    font-weight: 400;
+    color: rgba(255,255,255,.75);
+    margin-top: 1px;
+}
+
+/* ---------- Login overlay ---------- */
 #loginOverlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,.55);
+    top: 68px;
+    background: radial-gradient(circle at 30% 20%, #eef6ee, #e4ece4 60%);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
+    padding: 20px;
 }
 
 #loginBox {
-    background: white;
-    padding: 22px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 340px;
+    background: var(--card);
+    padding: 28px 24px;
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 360px;
     text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    animation: riseIn .35s ease;
 }
 
-#loginBox input, #loginBox button {
+@keyframes riseIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+#loginBox h3 {
+    margin: 0 0 4px;
+    font-size: 19px;
+    color: var(--primary-dark);
+}
+
+#loginBox p.sub {
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.field {
+    text-align: right;
+    margin-top: 14px;
+}
+
+.field label {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 5px;
+}
+
+#loginBox input {
     width: 100%;
-    padding: 12px;
-    margin-top: 12px;
-    font-size: 16px;
+    padding: 12px 14px;
+    font-size: 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: #fafafa;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+#loginBox input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+    background: white;
 }
 
 #loginBox button {
-    background: rgb(36,109,37);
+    width: 100%;
+    padding: 13px;
+    margin-top: 20px;
+    font-size: 15.5px;
+    font-weight: 600;
+    background: var(--primary);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
 }
+
+#loginBox button:hover { background: var(--primary-dark); }
+#loginBox button:active { transform: scale(.98); }
 
 #errorMsg {
-    color: #b91c1c;
-    margin-top: 10px;
+    color: var(--danger);
+    margin-top: 12px;
+    font-size: 13.5px;
+    min-height: 18px;
 }
 
+.notice {
+    margin-top: 16px;
+    padding: 10px 12px;
+    background: var(--primary-light);
+    border: 1px solid #cfe6cf;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #355a36;
+    text-align: right;
+    line-height: 1.6;
+}
+
+.notice.warn {
+    background: #fff7e6;
+    border-color: #f3dca0;
+    color: #8a5a00;
+}
+
+#mapInfoBar {
+    position: relative;
+    background: var(--primary-light);
+    border-bottom: 1px solid #cfe6cf;
+    padding: 10px 44px 10px 16px;
+    font-size: 13px;
+    color: #2f4f30;
+    line-height: 1.7;
+    text-align: right;
+    z-index: 6;
+    display: none;
+    flex-shrink: 0;
+}
+
+#mapInfoBar strong {
+    color: var(--primary-dark);
+}
+
+#mapInfoBar button {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #2f4f30;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 8px;
+}
+
+/* ---------- Map ---------- */
 #map-container {
     position: absolute;
-    top: 52px;
+    top: 68px;
     left: 0;
     right: 0;
     bottom: 0;
     display: none;
+    flex-direction: column;
     background: white;
+}
+
+#mapFrameWrap {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+}
+
+#mapLoading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: white;
+    z-index: 5;
+}
+
+.spinner {
+    width: 38px;
+    height: 38px;
+    border: 4px solid var(--primary-light);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+#mapLoading span {
+    font-size: 13.5px;
+    color: var(--muted);
 }
 
 iframe {
@@ -76,25 +270,288 @@ iframe {
     height: 100%;
     border: none;
 }
+
+#logoutBtn {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,.14);
+    color: white;
+    border: 1px solid rgba(255,255,255,.35);
+    padding: 6px 12px 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    backdrop-filter: blur(2px);
+    transition: background .15s, transform .1s;
+}
+#logoutBtn svg { width: 14px; height: 14px; flex-shrink: 0; }
+#logoutBtn:hover { background: rgba(255,255,255,.26); }
+#logoutBtn:active { transform: translateY(-50%) scale(.96); }
+
+/* ---------- Help button + guide panel ---------- */
+#helpBtn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,.25);
+    z-index: 20;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+#helpBtn:hover { background: var(--primary-dark); }
+#helpBtn.pulse { animation: pulseGlow 1.8s ease-in-out 3; }
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 6px 16px rgba(0,0,0,.25); }
+    50% { box-shadow: 0 6px 22px rgba(36,109,37,.6); }
+}
+
+#helpOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    padding: 20px;
+}
+
+#helpPanel {
+    background: var(--card);
+    width: 100%;
+    max-width: 420px;
+    max-height: 85vh;
+    border-radius: var(--radius);
+    box-shadow: 0 14px 36px rgba(0,0,0,.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#helpHeader {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#helpHeader h4 {
+    margin: 0;
+    font-size: 16px;
+}
+
+#helpHeader button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 6px;
+}
+
+#helpBody {
+    padding: 14px 18px 20px;
+    overflow-y: auto;
+    text-align: right;
+}
+
+.helpItem {
+    border-bottom: 1px solid #eee;
+    padding: 12px 0;
+}
+.helpItem:last-child { border-bottom: none; }
+
+.helpItem .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    font-size: 15px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.helpItem .row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.helpItem .txt h5 {
+    margin: 0 0 4px;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.helpItem .txt p {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.7;
+}
 </style>
 </head>
 
 <body>
 
-<div id="header">إدارة تصميم ودراسة شبكات السيول</div>
+<div id="header">
+    <div id="headerIcon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2c0 0-6 7-6 11.5a6 6 0 0 0 12 0C18 9 12 2 12 2z" fill="white"/>
+        </svg>
+    </div>
+    <div id="headerText">
+        <div class="title">إدارة تصميم ودراسة شبكات السيول</div>
+        <div class="subtitle">الخريطة التفاعلية لشبكات تصريف السيول</div>
+    </div>
+    <button id="logoutBtn" onclick="logout()" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 17l5-5-5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 12H9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>خروج</span>
+    </button>
+</div>
 
 <div id="loginOverlay">
     <div id="loginBox">
         <h3>تسجيل الدخول</h3>
-        <input id="username" placeholder="اسم المستخدم">
-        <input id="password" type="password" placeholder="كلمة المرور">
+        <p class="sub">الرجاء إدخال بيانات الدخول للوصول إلى الخريطة</p>
+
+        <div class="field">
+            <label for="username">اسم المستخدم</label>
+            <input id="username" autocomplete="username">
+        </div>
+        <div class="field">
+            <label for="password">كلمة المرور</label>
+            <input id="password" type="password" autocomplete="current-password">
+        </div>
+
         <button onclick="checkLogin()">دخول</button>
         <div id="errorMsg"></div>
+
+        <div class="notice warn">
+            تنبيه: يتم تسجيل اسم المستخدم ووقت الدخول لكل جلسة لأغراض المراجعة والرقابة.
+        </div>
     </div>
 </div>
 
 <div id="map-container">
-    <iframe id="mapFrame"></iframe>
+    <div id="mapInfoBar">
+        <button onclick="document.getElementById('mapInfoBar').style.display='none';" title="إخفاء">×</button>
+        <strong>عن الخريطة:</strong> تعرض هذه الخريطة التفاعلية شبكات تصريف السيول.
+    إذا شعرت أن الخريطة مزدحمة بالطبقات، اضغط على زر "؟" أسفل الشاشة لمعرفة كيفية إظهار وإخفاء الطبقات.
+    </div>
+    <div id="mapFrameWrap">
+        <div id="mapLoading">
+            <div class="spinner"></div>
+            <span>جاري تحميل الخريطة...</span>
+        </div>
+        <iframe id="mapFrame"></iframe>
+    </div>
+    <button id="helpBtn" onclick="toggleHelp(true)" title="دليل استخدام الخريطة">؟</button>
+</div>
+
+<div id="helpOverlay">
+    <div id="helpPanel">
+        <div id="helpHeader">
+            <h4>دليل استخدام الخريطة</h4>
+            <button onclick="toggleHelp(false)" title="إغلاق">×</button>
+        </div>
+        <div id="helpBody">
+
+            <div class="helpItem">
+                <div class="row">
+                    <div class="icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor"/>
+                            <path d="M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" fill="none"/>
+                            <path d="M2 17l10 5 10-5" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                    <div class="txt">
+                        <h5>الطبقات</h5>
+                        <p>الطبقات مقسّمة إلى مجموعات. افتح أيقونة الطبقات وتصفّح المجموعات لإظهار أو إخفاء ما تحتاجه.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="helpItem">
+                <div class="row">
+                    <div class="icon">🔍</div>
+                    <div class="txt">
+                        <h5>البحث عن موقع</h5>
+                        <p>استخدم مربع البحث في أعلى الخريطة للانتقال مباشرة إلى اسم منطقة أو مخطط محدد بدلًا من التنقل اليدوي بين كل المجموعات.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="helpItem">
+                <div class="row">
+                    <div class="icon">⬚</div>
+                    <div class="txt">
+                        <h5>تغيير الخلفية (Basemap)</h5>
+                        <p>يمكنك تبديل خريطة الأساس (قمر صناعي / خريطة شوارع) من أيقونة الخلفيات لتحسين وضوح الطبقات فوقها حسب ما تحتاج.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="helpItem">
+                <div class="row">
+                    <div class="icon">＋</div>
+                    <div class="txt">
+                        <h5>التكبير على منطقة محددة</h5>
+                        <p>كبّر (Zoom) على المنطقة التي تهمك بدل عرض الخريطة كاملة، فالتفاصيل الكثيرة تظهر أوضح وأقل تشابكًا كلما كبّرت أكثر.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="helpItem">
+                <div class="row">
+                    <div class="icon">ℹ</div>
+                    <div class="txt">
+                        <h5>معرفة تفاصيل عنصر على الخريطة</h5>
+                        <p>اضغط على أي خط أو نقطة أو منطقة على الخريطة لفتح نافذة معلومات (Popup) تعرض تفاصيلها دون الحاجة لقراءة كل الطبقات دفعة واحدة.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="helpItem">
+                <div class="row">
+                    <div class="icon">⟳</div>
+                    <div class="txt">
+                        <h5>لو الخريطة بطيئة أو ما استجابت</h5>
+                        <p>أغلق هذه النافذة وأعد تحميل الصفحة (F5) ثم سجّل الدخول مرة أخرى.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
 
 <script>
@@ -119,6 +576,7 @@ const USERS = [
 ];
 
 let mapLoaded = false;
+let currentUser = null;
 
 function checkLogin() {
     const u = username.value.trim();
@@ -127,55 +585,74 @@ function checkLogin() {
 
     const ok = USERS.find(x => x.username === u && x.password === p);
     if (!ok) {
-        err.textContent = "error";
+        err.textContent = "اسم المستخدم أو كلمة المرور غير صحيحة";
         return;
     }
+    err.textContent = "";
+    currentUser = u;
 
     sessionStorage.setItem("loggedIn", "1");
+    sessionStorage.setItem("loggedInUser", u);
 
     document.getElementById("loginOverlay").style.display = "none";
+    document.getElementById("logoutBtn").style.display = "inline-block";
 
-    // تحميل الخريطة بتأخير (حل مشكلة iOS)
-    setTimeout(loadMap, 800);
+    loadMap();
+    logSession(currentUser);
+}
 
-    // الموقع بدون تعطيل الصفحة
-    navigator.geolocation.getCurrentPosition(pos => {
-        fetch("https://api.ipify.org?format=json")
-        .then(r => r.json())
-        .then(d => sendToGoogle(u, d.ip, pos.coords.latitude, pos.coords.longitude))
-        .catch(()=>{});
-    }, ()=>{}, { timeout: 5000 });
+function logSession(user) {
+    const timestamp = new Date().toISOString();
+    sendToGoogle(user, timestamp);
 }
 
 function loadMap() {
     if (mapLoaded) return;
     mapLoaded = true;
-    document.getElementById("map-container").style.display = "block";
-    mapFrame.src = "https://www.arcgis.com/apps/mapviewer/index.html?webmap=c547b98159744cacb7a42db1c060bf64";
+    document.getElementById("map-container").style.display = "flex";
+    document.getElementById("mapInfoBar").style.display = "block";
+    const helpBtn = document.getElementById("helpBtn");
+    const frame = document.getElementById("mapFrame");
+    frame.onload = () => {
+        document.getElementById("mapLoading").style.display = "none";
+        helpBtn.style.display = "flex";
+        helpBtn.classList.add("pulse");
+        setTimeout(() => helpBtn.classList.remove("pulse"), 6000);
+    };
+    frame.src = "https://www.arcgis.com/apps/mapviewer/index.html?webmap=c547b98159744cacb7a42db1c060bf64";
+}
+
+function toggleHelp(show) {
+    document.getElementById("helpOverlay").style.display = show ? "flex" : "none";
+}
+
+function logout() {
+    sessionStorage.removeItem("loggedIn");
+    sessionStorage.removeItem("loggedInUser");
+    location.reload();
 }
 
 window.onload = () => {
     if (sessionStorage.getItem("loggedIn")) {
+        currentUser = sessionStorage.getItem("loggedInUser");
         document.getElementById("loginOverlay").style.display = "none";
+        document.getElementById("logoutBtn").style.display = "inline-block";
         loadMap();
     }
 };
 
-function sendToGoogle(user, ip, lat, lon) {
+function sendToGoogle(user, timestamp) {
+    const params = new URLSearchParams();
+    params.set("user", user || "");
+    params.set("timestamp", timestamp || "");
+
     fetch("https://script.google.com/macros/s/AKfycbxdgRaxLQxrDkP_--wuX_H9RueEnKkTYhDhy-O_QgJDZQPpXmOANOZhbGjN8lNrqYtY/exec", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `user=${encodeURIComponent(user)}&ip=${encodeURIComponent(ip)}&lat=${lat}&lon=${lon}`
-    }).catch(()=>{});
+        body: params.toString()
+    }).catch(() => {});
 }
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
